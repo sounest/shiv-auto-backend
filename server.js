@@ -11,9 +11,9 @@ app.use(express.json());
 
 // ✅ CORS Setup
 const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
   "https://shiv-auto.netlify.app",
+  "http://localhost:3000",
+  "http://localhost:5173",
 ];
 
 // ✅ Setup CORS middleware
@@ -36,6 +36,7 @@ app.use(
     credentials: true,
   })
 );
+
 // ✅ Database connection
 mongoose
   .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
