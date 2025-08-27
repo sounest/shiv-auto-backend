@@ -10,7 +10,7 @@ const app = express();
 // ✅ CORS setup
 const allowedOrigins = [
   "http://localhost:5173", 
-  // "https://shivauto-frontend.onrender.com", // change to your deployed frontend
+  "shiv-auto.netlify.app", // change to your deployed frontend
 ];
 
 app.use(cors({
