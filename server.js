@@ -1,23 +1,35 @@
+// server.js
 const express = require("express");
-const dotenv = require("dotenv");
+const mongoose = require("mongoose");
 const cors = require("cors");
-const connectDb = require("./utils/db");
-
-dotenv.config();
+require("dotenv").config();
 
 const app = express();
 
-// ✅ CORS setup
+// ✅ Middleware
+app.use(express.json());
+
+// ✅ CORS Setup
 const allowedOrigins = [
-  "http://localhost:5173",               // dev
-  "https://shiv-auto.netlify.app"
+  "http://localhost:5173", // local dev
+  "http://localhost:3000",
+  "https://shiv-auto.netlify.app", // your frontend
+  "https://www.shiv-auto.netlify.app",
 ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      console.log("🌍 Request Origin:", origin); // 👀 log origin
-      if (!origin || allowedOrigins.includes(origin)) {
+      console.log("🌍 Request Origin:", origin);
+
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+
+      // Allow Netlify subdomains & localhost
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".netlify.app")
+      ) {
         callback(null, true);
       } else {
         console.error("❌ CORS blocked:", origin);
@@ -28,23 +40,20 @@ app.use(
   })
 );
 
+// ✅ Database connection
+mongoose
+  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-app.use(express.json());
+// ✅ Routes
+const productRoutes = require("./routes/productRoutes");
+app.use("/api/products", productRoutes);
 
-// ✅ Routers
-const authRouter = require("./router/auth-router");
-const contactRouter = require("./router/contact-router");
-const productRouter = require("./router/product-router");
-
-app.use("/api/auth", authRouter);
-app.use("/api/contact", contactRouter);
-app.use("/api/products", productRouter);
-
-// ✅ Connect DB
-connectDb();
-
-// ✅ Start Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+app.get("/", (req, res) => {
+  res.send("🚀 Shiv Auto Backend is running!");
 });
+
+// ✅ Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
