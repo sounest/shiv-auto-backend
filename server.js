@@ -1,40 +1,45 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const cors = require("cors");   // ✅ Import CORS
+const cors = require("cors");
 const connectDb = require("./utils/db");
 
-dotenv.config(); // ✅ load .env first
+dotenv.config();
 
 const app = express();
 
-// ✅ Enable CORS for all origins (or restrict to your frontend)
-// server.js
-
+// ✅ CORS setup
+const allowedOrigins = [
+  "http://localhost:5173", 
+  // "https://shivauto-frontend.onrender.com", // change to your deployed frontend
+];
 
 app.use(cors({
-  origin: "http://localhost:5173", // React dev server
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
 }));
 
-
 app.use(express.json());
 
-// ✅ Import Routers
+// ✅ Routers
 const authRouter = require("./router/auth-router");
 const contactRouter = require("./router/contact-router");
 const productRouter = require("./router/product-router");
-// const billRouter = require("./router/bill-router");
 
-// ✅ Use Routers
 app.use("/api/auth", authRouter);
 app.use("/api/contact", contactRouter);
 app.use("/api/products", productRouter);
-// app.use("/api/bills", billRouter);
 
-// ✅ Connect to DB
+// ✅ Connect DB
 connectDb();
 
 // ✅ Start Server
-app.listen( 5000, () => {
-  console.log(`🚀 Server running on port ${process.env.PORT || 5000}`);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
