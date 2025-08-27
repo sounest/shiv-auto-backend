@@ -11,32 +11,31 @@ app.use(express.json());
 
 // ✅ CORS Setup
 const allowedOrigins = [
-  "https://shiv-auto.netlify.app/", // your frontend
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://shiv-auto.netlify.app",
 ];
 
+// ✅ Setup CORS middleware
 app.use(
   cors({
     origin: (origin, callback) => {
       console.log("🌍 Request Origin:", origin);
 
-      // Allow requests with no origin (like mobile apps or curl)
+      // Allow requests with no origin (e.g., Postman, curl)
       if (!origin) return callback(null, true);
 
-      // Allow Netlify subdomains & localhost
-      if (
-        allowedOrigins.includes(origin) ||
-        origin.endsWith(".netlify.app")
-      ) {
-        callback(null, true);
-      } else {
-        console.error("❌ CORS blocked:", origin);
-        callback(new Error("Not allowed by CORS"));
+      // ✅ Check if origin is in allowed list
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
       }
+
+      // ❌ Block everything else
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
   })
 );
-
 // ✅ Database connection
 mongoose
   .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
