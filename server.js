@@ -9,8 +9,9 @@ const app = express();
 
 // ✅ CORS setup
 const allowedOrigins = [
-  "http://localhost:5173",           // local dev
-  "https://shiv-auto.netlify.app",   // deployed frontend (with https)
+  "http://localhost:5173",               // local dev
+  "https://shiv-auto.netlify.app",       // deployed frontend
+  "https://www.shiv-auto.netlify.app",   // sometimes Netlify adds www
 ];
 
 app.use(
@@ -19,6 +20,7 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
+        console.error("❌ CORS blocked:", origin); // debug log
         callback(new Error("Not allowed by CORS"));
       }
     },
@@ -45,4 +47,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
-
