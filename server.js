@@ -44,7 +44,7 @@ mongoose
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // ✅ Routes
-const productRoutes = require("./routes/productRoutes");
+const productRoutes = require("./router/product-router");
 app.use("/api/products", productRoutes);
 
 app.get("/", (req, res) => {
