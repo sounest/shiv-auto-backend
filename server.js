@@ -11,10 +11,7 @@ app.use(express.json());
 
 // ✅ CORS Setup
 const allowedOrigins = [
-  "http://localhost:5173", // local dev
-  "http://localhost:3000",
-  "https://shiv-auto.netlify.app", // your frontend
-  "https://www.shiv-auto.netlify.app",
+  "https://shiv-auto.netlify.app/", // your frontend
 ];
 
 app.use(
