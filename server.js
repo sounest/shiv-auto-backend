@@ -45,7 +45,10 @@ mongoose
 
 // ✅ Routes
 const productRoutes = require("./router/product-router");
+const authRoutes = require("./router/auth-router");  // 👈 added auth router
+
 app.use("/api/products", productRoutes);
+app.use("/api/auth", authRoutes); // 👈 mount auth routes here
 
 app.get("/", (req, res) => {
   res.send("🚀 Shiv Auto Backend is running!");
