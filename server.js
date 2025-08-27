@@ -9,24 +9,26 @@ const app = express();
 
 // ✅ CORS setup
 const allowedOrigins = [
-  "http://localhost:5173",               // local dev
+  "http://localhost:5173",               // dev
   "https://shiv-auto.netlify.app",       // deployed frontend
-  "https://www.shiv-auto.netlify.app",   // sometimes Netlify adds www
+  "https://www.shiv-auto.netlify.app",   // netlify sometimes adds www
 ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
+      console.log("🌍 Request Origin:", origin); // 👀 log origin
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        console.error("❌ CORS blocked:", origin); // debug log
+        console.error("❌ CORS blocked:", origin);
         callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
   })
 );
+
 
 app.use(express.json());
 
