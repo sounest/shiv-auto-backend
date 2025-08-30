@@ -52,4 +52,23 @@ router.patch("/:id/quantity", async (req, res) => {
   }
 });
 
+// Edit product details
+router.patch("/:id", async (req, res) => {
+  try {
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      req.body,  // We use the request body to update product details
+      { new: true }  // This option ensures that the updated document is returned
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json(updatedProduct);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
