@@ -44,11 +44,13 @@ mongoose
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // ✅ Routes
+// ✅ Routes
 const productRoutes = require("./router/product-router");
-app.use("/api/products", productRoutes);
+const authRoutes = require("./router/auth-router");
 
-const authrouter = require("./router/auth-router")
-app.use("/api/products", authrouter);
+app.use("/api/products", productRoutes);
+app.use("/api/auth", authRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("🚀 Shiv Auto Backend is running!");
