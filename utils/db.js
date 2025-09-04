@@ -1,23 +1,20 @@
+// db/connectDb.js
 const mongoose = require("mongoose");
 
 const connectDb = async () => {
   try {
-    console.log("🔍 MONGO_URI:", process.env.MONGO_URI?.slice(0, 30) + "..."); // partial log for safety
+    console.log("🔍 Connecting to MongoDB...");
 
     const conn = await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 30000, // wait 30s before timing out
+      serverSelectionTimeoutMS: 30000, // wait 30s before timeout
     });
 
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error("❌ MongoDB connection error:", error.message);
-    console.error("Stack:", error.stack);
-
-    console.error(
-      "💡 Hint: Check your IP whitelist in MongoDB Atlas and ensure your MONGO_URI is correct."
-    );
+    console.error("💡 Check your Atlas IP whitelist and MONGO_URI.");
     process.exit(1);
   }
 };
