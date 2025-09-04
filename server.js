@@ -1,59 +1,60 @@
 // server.js
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
+const compression = require("compression");
 require("dotenv").config();
+const connectDb = require("./db/connectDb");
 
 const app = express();
 
 // ✅ Middleware
 app.use(express.json());
+app.use(compression()); // 🚀 speeds up response
+app.disable("x-powered-by"); // security + small perf boost
 
 // ✅ CORS Setup
 const allowedOrigins = [
-  "https://shiv-auto.netlify.app",
+  "https://shiv-auto.netlify.app", // your frontend
   "http://localhost:3000",
   "http://localhost:5173",
 ];
 
-// ✅ Setup CORS middleware
 app.use(
   cors({
     origin: (origin, callback) => {
-      console.log("🌍 Request Origin:", origin);
+      if (!origin) return callback(null, true); // allow Postman/curl
 
-      // Allow requests with no origin (e.g., Postman, curl)
-      if (!origin) return callback(null, true);
-
-      // ✅ Check if origin is in allowed list
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      // ❌ Block everything else
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
   })
 );
 
-// ✅ Database connection
-mongoose
-  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
-
 // ✅ Routes
 const productRoutes = require("./router/product-router");
-const authRoutes = require("./router/auth-router");  // 👈 added auth router
-
 app.use("/api/products", productRoutes);
-app.use("/api/auth", authRoutes); // 👈 mount auth routes here
 
+// ✅ Root route
 app.get("/", (req, res) => {
-  res.send("🚀 Shiv Auto Backend is running!");
+  res.send("🚀 Shiv Auto Backend is running fast!");
 });
 
-// ✅ Start server
+// ✅ Start server after DB connects
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+
+connectDb().then(() => {
+  app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+});
+
+// ✅ Keep-alive ping (avoid Render free cold starts)
+if (process.env.NODE_ENV === "production") {
+  setInterval(() => {
+    fetch("https://your-render-backend.onrender.com")
+      .then(() => console.log("🔄 Keep-alive ping sent"))
+      .catch(() => console.log("⚠️ Keep-alive failed"));
+  }, 10 * 60 * 1000); // every 10 min
+}
