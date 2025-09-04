@@ -12,7 +12,7 @@ app.use(express.json());
 // ✅ CORS Setup
 const allowedOrigins = [
   "https://shiv-auto.netlify.app",
-  "https://shiv-autos.netlify.app",
+  "http://localhost:3000",
   "http://localhost:5173",
 ];
 
@@ -46,6 +46,9 @@ mongoose
 // ✅ Routes
 const productRoutes = require("./router/product-router");
 app.use("/api/products", productRoutes);
+
+const authrouter = require("./router/auth-router")
+app.use("/api/products", authrouter);
 
 app.get("/", (req, res) => {
   res.send("🚀 Shiv Auto Backend is running!");
